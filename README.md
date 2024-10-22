@@ -44,6 +44,7 @@ Header(s)
 ### 📋 요구사항
 
 * 제공해 드리는 이미지 검색 API와 토큰을 이용하여 `src/lib/data.ts` 파일에서 `searchQuery` 함수를 완성해 주세요.
+* 완성한 `searchQuery` 함수를 사용하여, `src/pages/search.tsx` 파일에서 아래 요구사항에 맞는 그리드를 완성해야 합니다.
 * 데이터를 fetch하는 동안 로딩 화면은 `src/components/fallback.tsx`의 `<Fallback />` 컴포넌트를 사용해 주세요.
 * 이미지는 비율을 유지하면서 잘려서 화면에 가득 차도록 표시해야 합니다.
 * 이미지는 그리드 레이아웃으로 표시되어야 합니다:
