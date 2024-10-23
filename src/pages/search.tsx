@@ -3,6 +3,7 @@ import {useQuery} from '@tanstack/react-query';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {searchQuery} from '@/lib/data';
+import {Fallback} from '@/components/fallback';
 
 export const SearchPage = () => {
   const [query] = useState('브이하고 있는 사람');
@@ -14,7 +15,7 @@ export const SearchPage = () => {
   });
 
   return (
-    <div className="p-4">
+    <div className="m-auto max-w-3xl p-4">
       <div className="flex flex-row gap-2">
         <Input
           className="flex-[10]"
@@ -33,7 +34,14 @@ export const SearchPage = () => {
 
       <Button className="mt-2 w-full">검색</Button>
 
-      <pre>{isLoading ? 'loading...' : JSON.stringify(data, null, 2)}</pre>
+      {isLoading && <Fallback />}
+      <div className="mt-4 grid grid-cols-3 gap-1">
+        {data?.items.map(item => (
+          <a key={item.id}>
+            <img src={item.imageUrl} className="aspect-square object-cover" />
+          </a>
+        ))}
+      </div>
     </div>
   );
 };
