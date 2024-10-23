@@ -1,7 +1,18 @@
+import {useState} from 'react';
+import {useQuery} from '@tanstack/react-query';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
+import {searchQuery} from '@/lib/data';
 
 export const SearchPage = () => {
+  const [query] = useState('브이하고 있는 사람');
+  const [limit] = useState(12);
+
+  const {data, isLoading} = useQuery({
+    queryKey: ['search', query, limit],
+    queryFn: () => searchQuery(query, limit),
+  });
+
   return (
     <div className="p-4">
       <div className="flex flex-row gap-2">
@@ -22,7 +33,7 @@ export const SearchPage = () => {
 
       <Button className="mt-2 w-full">검색</Button>
 
-      {/* TODO: 아래에 이미지 그리드 코드를 완성해 주세요. */}
+      <pre>{isLoading ? 'loading...' : JSON.stringify(data, null, 2)}</pre>
     </div>
   );
 };
