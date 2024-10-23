@@ -51,8 +51,13 @@ export const SearchPage = () => {
       {isLoading && <Fallback />}
       <div className="mt-4 grid grid-cols-3 gap-1">
         {data?.items.map(item => (
-          <a key={item.id}>
-            <img src={item.imageUrl} className="aspect-square object-cover" />
+          <a
+            key={item.id}
+            href={`https://www.instagram.com/p/${item.shortcode}`}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <img src={item.imageUrl} className="aspect-square object-cover " />
           </a>
         ))}
       </div>
