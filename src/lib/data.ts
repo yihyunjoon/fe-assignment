@@ -15,7 +15,7 @@ export const searchQuery = async (
   query: string,
   limit: number
 ): Promise<SearchQueryResponse> => {
-  const response = await fetch(`${SEARCH_URL}?query=${query}?limit=${limit}`, {
+  const response = await fetch(`${SEARCH_URL}?query=${query}&limit=${limit}`, {
     headers: {
       Authorization: `Bearer ${import.meta.env.VITE_TOKEN}`,
     },

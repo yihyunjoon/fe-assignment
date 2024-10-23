@@ -6,33 +6,47 @@ import {searchQuery} from '@/lib/data';
 import {Fallback} from '@/components/fallback';
 
 export const SearchPage = () => {
-  const [query] = useState('브이하고 있는 사람');
-  const [limit] = useState(12);
+  const [queryInput, setQueryInput] = useState('브이하고 있는 사람');
+  const [limitInput, setLimitInput] = useState('12');
+
+  const [query, setQuery] = useState(queryInput);
+  const [limit, setLimit] = useState(Number(limitInput));
 
   const {data, isLoading} = useQuery({
     queryKey: ['search', query, limit],
     queryFn: () => searchQuery(query, limit),
   });
 
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setQuery(queryInput);
+    setLimit(Number(limitInput));
+  };
+
   return (
     <div className="m-auto max-w-3xl p-4">
-      <div className="flex flex-row gap-2">
-        <Input
-          className="flex-[10]"
-          type="text"
-          defaultValue="브이하고 있는 사람"
-          placeholder="검색어를 입력해 주세요."
-        />
-        <Input
-          className="flex-1"
-          type="number"
-          defaultValue={12}
-          min={0}
-          placeholder="이미지 개수를 입력해 주세요."
-        />
-      </div>
-
-      <Button className="mt-2 w-full">검색</Button>
+      <form onSubmit={handleSearch}>
+        <div className="flex flex-row gap-2">
+          <Input
+            className="flex-[10]"
+            type="text"
+            value={queryInput}
+            onChange={e => setQueryInput(e.target.value)}
+            placeholder="검색어를 입력해 주세요."
+          />
+          <Input
+            className="flex-1"
+            type="number"
+            value={limitInput}
+            onChange={e => setLimitInput(e.target.value)}
+            min={0}
+            placeholder="이미지 개수를 입력해 주세요."
+          />
+        </div>
+        <Button type="submit" className="mt-2 w-full">
+          검색
+        </Button>
+      </form>
 
       {isLoading && <Fallback />}
       <div className="mt-4 grid grid-cols-3 gap-1">
