@@ -57,7 +57,7 @@ export const SearchPage = () => {
             target="_blank"
             rel="noreferrer noopener"
           >
-            <img src={item.imageUrl} className="aspect-square object-cover " />
+            <img src={item.imageUrl} className="aspect-square w-full object-cover " />
           </a>
         ))}
       </div>
