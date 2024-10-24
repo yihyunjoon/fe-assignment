@@ -101,7 +101,13 @@ function ImageGrid({items}: ImageGridProps) {
         className={`mt-4 grid grid-cols-3 gap-1 ${allImagesLoaded ? 'grid' : 'hidden'}`}
       >
         {items.map(item => (
-          <ImageCard key={item.id} item={item} handleImageLoad={handleImageLoad} />
+          <ImageCard
+            key={item.id}
+            item={item}
+            handleImageLoad={handleImageLoad}
+            // 9의 배수보다 1 적은 인덱스 (8, 17, 26, ...)의 요소가 마지막 요소가 아니라면 2x2 크기로 확장
+            className="[&:nth-child(9n-1):not(:last-child)]:col-span-2 [&:nth-child(9n-1):not(:last-child)]:row-span-2"
+          />
         ))}
       </div>
     </>
@@ -111,19 +117,21 @@ function ImageGrid({items}: ImageGridProps) {
 interface ImageCardProps {
   item: SearchQueryItem;
   handleImageLoad: (id: string) => void;
+  className?: string;
 }
 
-function ImageCard({item, handleImageLoad}: ImageCardProps) {
+function ImageCard({item, handleImageLoad, className}: ImageCardProps) {
   return (
     <a
       key={item.id}
       href={`https://www.instagram.com/p/${item.shortcode}`}
       target="_blank"
       rel="noreferrer noopener"
+      className={className}
     >
       <img
         src={item.imageUrl}
-        className="aspect-square w-full object-cover "
+        className="aspect-square w-full object-cover"
         onLoad={() => handleImageLoad(item.id)}
       />
     </a>
