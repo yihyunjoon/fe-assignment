@@ -34,10 +34,16 @@ export const SearchPage = () => {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setAllImagesLoaded(false);
-    setLoadedImages(new Set());
-    setQuery(queryInput);
-    setLimit(Number(limitInput));
+    // 이전 query와 limit가 같은 경우 refetch
+    if (queryInput === query && Number(limitInput) === limit) {
+      refetch();
+    } else {
+      // 새로운 query와 limit가 입력된 경우 초기화 후 새로운 query 실행
+      setAllImagesLoaded(false);
+      setLoadedImages(new Set());
+      setQuery(queryInput);
+      setLimit(Number(limitInput));
+    }
   };
 
   return (
