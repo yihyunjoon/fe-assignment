@@ -12,9 +12,6 @@ export const SearchPage = () => {
   const [query, setQuery] = useState(queryInput);
   const [limit, setLimit] = useState(Number(limitInput));
 
-  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
-  const [loadedImages, setLoadedImages] = useState(new Set());
-
   const [isQueryEnabled, setIsQueryEnabled] = useState(false);
 
   const {data, isLoading, error, refetch} = useQuery({
@@ -22,18 +19,6 @@ export const SearchPage = () => {
     queryFn: () => searchQuery(query, limit),
     enabled: isQueryEnabled,
   });
-
-  // 이미지 로드가 완료되면 loadedImages에 추가
-  const handleImageLoad = (id: string) => {
-    setLoadedImages(prev => new Set([...prev, id]));
-  };
-
-  // loadedImages가 data.items.length와 같아지면 모든 이미지가 로드된 것으로 판단
-  useEffect(() => {
-    if (data?.items.length === loadedImages.size) {
-      setAllImagesLoaded(true);
-    }
-  }, [loadedImages]);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,8 +29,6 @@ export const SearchPage = () => {
       refetch();
     } else {
       // 새로운 query와 limit가 입력된 경우 초기화 후 새로운 query 실행
-      setAllImagesLoaded(false);
-      setLoadedImages(new Set());
       setQuery(queryInput);
       setLimit(Number(limitInput));
     }
@@ -86,52 +69,57 @@ export const SearchPage = () => {
         </div>
       )}
       {isLoading && <Fallback amount={limit} />}
-      {data && (
-        <ImageGrid
-          items={data.items}
-          allImagesLoaded={allImagesLoaded}
-          handleImageLoad={handleImageLoad}
-        />
-      )}
+      {data && <ImageGrid items={data.items} />}
     </div>
   );
 };
 
 interface ImageGridProps {
   items: SearchQueryItem[];
-  allImagesLoaded: boolean;
-  handleImageLoad: (id: string) => void;
 }
 
-function ImageGrid({items, allImagesLoaded, handleImageLoad}: ImageGridProps) {
+function ImageGrid({items}: ImageGridProps) {
+  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
+  const [loadedImages, setLoadedImages] = useState(new Set());
+
+  // 이미지 로드가 완료되면 loadedImages에 추가
+  const handleImageLoad = (id: string) => {
+    setLoadedImages(prev => new Set([...prev, id]));
+  };
+
+  // loadedImages가 data.items.length와 같아지면 모든 이미지가 로드된 것으로 판단
+  useEffect(() => {
+    if (items.length === loadedImages.size) {
+      setAllImagesLoaded(true);
+    }
+  }, [loadedImages]);
+
   return (
-    <div className="grid grid-cols-3 gap-1">
-      {items.map(item => (
-        <ImageCard
-          key={item.id}
-          item={item}
-          allImagesLoaded={allImagesLoaded}
-          handleImageLoad={handleImageLoad}
-        />
-      ))}
-    </div>
+    <>
+      <Fallback amount={items.length} className={allImagesLoaded ? 'hidden' : 'grid'} />
+      <div
+        className={`mt-4 grid grid-cols-3 gap-1 ${allImagesLoaded ? 'grid' : 'hidden'}`}
+      >
+        {items.map(item => (
+          <ImageCard key={item.id} item={item} handleImageLoad={handleImageLoad} />
+        ))}
+      </div>
+    </>
   );
 }
 
 interface ImageCardProps {
   item: SearchQueryItem;
-  allImagesLoaded: boolean;
   handleImageLoad: (id: string) => void;
 }
 
-function ImageCard({item, allImagesLoaded, handleImageLoad}: ImageCardProps) {
+function ImageCard({item, handleImageLoad}: ImageCardProps) {
   return (
     <a
       key={item.id}
       href={`https://www.instagram.com/p/${item.shortcode}`}
       target="_blank"
       rel="noreferrer noopener"
-      className={`transition-opacity duration-200 ${allImagesLoaded ? 'opacity-100' : 'opacity-0'}`}
     >
       <img
         src={item.imageUrl}
