@@ -48,7 +48,7 @@ export const SearchPage = () => {
         </Button>
       </form>
 
-      {isLoading && <Fallback />}
+      {isLoading && <Fallback amount={limit} />}
       <div className="mt-4 grid grid-cols-3 gap-1">
         {data?.items.map(item => (
           <a
