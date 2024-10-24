@@ -11,6 +11,10 @@ export interface SearchQueryResponse {
   items: SearchQueryItem[];
 }
 
+export interface SearchQueryErrorResponse {
+  error: string;
+}
+
 export const searchQuery = async (
   query: string,
   limit: number
@@ -20,6 +24,12 @@ export const searchQuery = async (
       Authorization: `Bearer ${import.meta.env.VITE_TOKEN}`,
     },
   });
+
+  if (!response.ok) {
+    const errorData: SearchQueryErrorResponse = await response.json();
+    throw new Error(errorData.error);
+  }
+
   const data: SearchQueryResponse = await response.json();
   return data;
 };

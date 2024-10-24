@@ -12,7 +12,7 @@ export const SearchPage = () => {
   const [query, setQuery] = useState(queryInput);
   const [limit, setLimit] = useState(Number(limitInput));
 
-  const {data, isLoading} = useQuery({
+  const {data, isLoading, error, refetch} = useQuery({
     queryKey: ['search', query, limit],
     queryFn: () => searchQuery(query, limit),
   });
@@ -47,7 +47,16 @@ export const SearchPage = () => {
           검색
         </Button>
       </form>
-
+      {error && (
+        <div className="mt-4 flex items-center rounded-md bg-red-100 p-4">
+          <div className="flex-1 text-red-500 ">
+            다음과 같은 에러가 발생하였습니다. {error.message}. 다시 시도하시겠습니까?
+          </div>
+          <Button variant="outline" className="" onClick={() => refetch()}>
+            다시 시도
+          </Button>
+        </div>
+      )}
       {isLoading && <Fallback amount={limit} />}
       <div className="mt-4 grid grid-cols-3 gap-1">
         {data?.items.map(item => (
