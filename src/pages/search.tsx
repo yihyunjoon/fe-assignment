@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {useQuery} from '@tanstack/react-query';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
-import {searchQuery} from '@/lib/data';
+import {searchQuery, type SearchQueryItem} from '@/lib/data';
 import {Fallback} from '@/components/fallback';
 
 export const SearchPage = () => {
@@ -86,23 +86,58 @@ export const SearchPage = () => {
         </div>
       )}
       {isLoading && <Fallback amount={limit} />}
-      <div className="mt-4 grid grid-cols-3 gap-1">
-        {data?.items.map(item => (
-          <a
-            key={item.id}
-            href={`https://www.instagram.com/p/${item.shortcode}`}
-            target="_blank"
-            rel="noreferrer noopener"
-            className={`transition-opacity duration-200 ${allImagesLoaded ? 'opacity-100' : 'opacity-0'}`}
-          >
-            <img
-              src={item.imageUrl}
-              className="aspect-square w-full object-cover "
-              onLoad={() => handleImageLoad(item.id)}
-            />
-          </a>
-        ))}
-      </div>
+      {data && (
+        <ImageGrid
+          items={data.items}
+          allImagesLoaded={allImagesLoaded}
+          handleImageLoad={handleImageLoad}
+        />
+      )}
     </div>
   );
 };
+
+interface ImageGridProps {
+  items: SearchQueryItem[];
+  allImagesLoaded: boolean;
+  handleImageLoad: (id: string) => void;
+}
+
+function ImageGrid({items, allImagesLoaded, handleImageLoad}: ImageGridProps) {
+  return (
+    <div className="grid grid-cols-3 gap-1">
+      {items.map(item => (
+        <ImageCard
+          key={item.id}
+          item={item}
+          allImagesLoaded={allImagesLoaded}
+          handleImageLoad={handleImageLoad}
+        />
+      ))}
+    </div>
+  );
+}
+
+interface ImageCardProps {
+  item: SearchQueryItem;
+  allImagesLoaded: boolean;
+  handleImageLoad: (id: string) => void;
+}
+
+function ImageCard({item, allImagesLoaded, handleImageLoad}: ImageCardProps) {
+  return (
+    <a
+      key={item.id}
+      href={`https://www.instagram.com/p/${item.shortcode}`}
+      target="_blank"
+      rel="noreferrer noopener"
+      className={`transition-opacity duration-200 ${allImagesLoaded ? 'opacity-100' : 'opacity-0'}`}
+    >
+      <img
+        src={item.imageUrl}
+        className="aspect-square w-full object-cover "
+        onLoad={() => handleImageLoad(item.id)}
+      />
+    </a>
+  );
+}
