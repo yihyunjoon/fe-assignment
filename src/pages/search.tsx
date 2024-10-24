@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useQuery} from '@tanstack/react-query';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
@@ -12,13 +12,30 @@ export const SearchPage = () => {
   const [query, setQuery] = useState(queryInput);
   const [limit, setLimit] = useState(Number(limitInput));
 
+  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
+  const [loadedImages, setLoadedImages] = useState(new Set());
+
   const {data, isLoading, error, refetch} = useQuery({
     queryKey: ['search', query, limit],
     queryFn: () => searchQuery(query, limit),
   });
 
+  // 이미지 로드가 완료되면 loadedImages에 추가
+  const handleImageLoad = (id: string) => {
+    setLoadedImages(prev => new Set([...prev, id]));
+  };
+
+  // loadedImages가 data.items.length와 같아지면 모든 이미지가 로드된 것으로 판단
+  useEffect(() => {
+    if (data?.items.length === loadedImages.size) {
+      setAllImagesLoaded(true);
+    }
+  }, [loadedImages]);
+
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setAllImagesLoaded(false);
+    setLoadedImages(new Set());
     setQuery(queryInput);
     setLimit(Number(limitInput));
   };
@@ -65,8 +82,13 @@ export const SearchPage = () => {
             href={`https://www.instagram.com/p/${item.shortcode}`}
             target="_blank"
             rel="noreferrer noopener"
+            className={`transition-opacity duration-200 ${allImagesLoaded ? 'opacity-100' : 'opacity-0'}`}
           >
-            <img src={item.imageUrl} className="aspect-square w-full object-cover " />
+            <img
+              src={item.imageUrl}
+              className="aspect-square w-full object-cover "
+              onLoad={() => handleImageLoad(item.id)}
+            />
           </a>
         ))}
       </div>
