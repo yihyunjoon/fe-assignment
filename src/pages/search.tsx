@@ -15,9 +15,12 @@ export const SearchPage = () => {
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
   const [loadedImages, setLoadedImages] = useState(new Set());
 
+  const [isQueryEnabled, setIsQueryEnabled] = useState(false);
+
   const {data, isLoading, error, refetch} = useQuery({
     queryKey: ['search', query, limit],
     queryFn: () => searchQuery(query, limit),
+    enabled: isQueryEnabled,
   });
 
   // 이미지 로드가 완료되면 loadedImages에 추가
@@ -34,6 +37,8 @@ export const SearchPage = () => {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // 검색 버튼 클릭 후 부터 useQuery를 실행하도록 함
+    setIsQueryEnabled(true);
     // 이전 query와 limit가 같은 경우 refetch
     if (queryInput === query && Number(limitInput) === limit) {
       refetch();
